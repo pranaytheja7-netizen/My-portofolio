@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            padding: 2rem;
+        }
+        
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .admin-header {
+            background: #007bff;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .admin-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-content {
+            padding: 2rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+        
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .preview-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+        
+        .preview-section h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .notification {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .notification.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .portfolio-item {
+            border: 1px solid #e9ecef;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+        }
+        
+        .portfolio-item h4 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .remove-btn:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Portfolio Admin Panel</h1>
+            <p>Manage your portfolio content easily</p>
+        </div>
+        
+        <div class="admin-content">
+            <div id="notification" class="notification"></div>
+            
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <h3>Personal Information</h3>
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" placeholder="John">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" placeholder="Doe">
+                </div>
+                <div class="form-group">
+                    <label for="title">Professional Title</label>
+                    <input type="text" id="title" placeholder="Full Stack Developer">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="I am a passionate developer..."></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn" onclick="savePersonalInfo()">Save Personal Info</button>
+                    <button class="btn btn-secondary" onclick="previewPersonalInfo()">Preview</button>
+                </div>
+                <div id="personalPreview" class="preview-section" style="display: none;">
+                    <h4>Preview:</h4>
+                    <div id="personalPreviewContent"></div>
+                </div>
+            </div>
+            
+            <!-- Contact Information Section -->
+            <div class="form-section">
+                <h3>Contact Information</h3>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="your.email@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" placeholder="+1 (555) 123-4567">
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" placeholder="New York, USA">
+                </div>
+                <div class="btn-group">
+                    <button class="btn" onclick="saveContactInfo()">Save Contact Info</button>
+                    <button class="btn btn-secondary" onclick="previewContactInfo()">Preview</button>
+                </div>
+                <div id="contactPreview" class="preview-section" style="display: none;">
+                    <h4>Preview:</h4>
+                    <div id="contactPreviewContent"></div>
+                </div>
+            </div>
+            
+            <!-- Portfolio Projects Section -->
+            <div class="form-section">
+                <h3>Portfolio Projects</h3>
+                <div class="form-group">
+                    <label for="projectTitle">Project Title</label>
+                    <input type="text" id="projectTitle" placeholder="E-commerce Website">
+                </div>
+                <div class="form-group">
+                    <label for="projectCategory">Category</label>
+                    <select id="projectCategory">
+                        <option value="Web Development">Web Development</option>
+                        <option value="Mobile App">Mobile App</option>
+                        <option value="UI/UX Design">UI/UX Design</option>
+                        <option value="Full Stack">Full Stack</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="projectImage">Image URL</label>
+                    <input type="url" id="projectImage" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="btn-group">
+                    <button class="btn" onclick="addProject()">Add Project</button>
+                    <button class="btn btn-secondary" onclick="clearProjectForm()">Clear Form</button>
+                </div>
+                
+                <div id="projectsList">
+                    <h4>Current Projects:</h4>
+                    <div id="projectsContainer"></div>
+                </div>
+            </div>
+            
+            <!-- Skills Section -->
+            <div class="form-section">
+                <h3>Skills</h3>
+                <div class="form-group">
+                    <label for="skill1">Skill 1</label>
+                    <input type="text" id="skill1" placeholder="Frontend Developer">
+                </div>
+                <div class="form-group">
+                    <label for="skill2">Skill 2</label>
+                    <input type="text" id="skill2" placeholder="Backend Developer">
+                </div>
+                <div class="form-group">
+                    <label for="skill3">Skill 3</label>
+                    <input type="text" id="skill3" placeholder="Full Stack Developer">
+                </div>
+                <div class="btn-group">
+                    <button class="btn" onclick="saveSkills()">Save Skills</button>
+                    <button class="btn btn-secondary" onclick="previewSkills()">Preview</button>
+                </div>
+                <div id="skillsPreview" class="preview-section" style="display: none;">
+                    <h4>Preview:</h4>
+                    <div id="skillsPreviewContent"></div>
+                </div>
+            </div>
+            
+            <!-- Export/Import Section -->
+            <div class="form-section">
+                <h3>Data Management</h3>
+                <div class="btn-group">
+                    <button class="btn" onclick="exportData()">Export Data</button>
+                    <button class="btn btn-secondary" onclick="importData()">Import Data</button>
+                    <button class="btn btn-secondary" onclick="generateHTML()">Generate HTML</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved data on page load
+        window.addEventListener('load', function() {
+            loadSavedData();
+        });
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function savePersonalInfo() {
+            const data = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value
+            };
+            
+            localStorage.setItem('portfolioPersonalInfo', JSON.stringify(data));
+            showNotification('Personal information saved successfully!');
+        }
+
+        function saveContactInfo() {
+            const data = {
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                location: document.getElementById('location').value
+            };
+            
+            localStorage.setItem('portfolioContactInfo', JSON.stringify(data));
+            showNotification('Contact information saved successfully!');
+        }
+
+        function saveSkills() {
+            const data = {
+                skill1: document.getElementById('skill1').value,
+                skill2: document.getElementById('skill2').value,
+                skill3: document.getElementById('skill3').value
+            };
+            
+            localStorage.setItem('portfolioSkills', JSON.stringify(data));
+            showNotification('Skills saved successfully!');
+        }
+
+        function addProject() {
+            const project = {
+                title: document.getElementById('projectTitle').value,
+                category: document.getElementById('projectCategory').value,
+                image: document.getElementById('projectImage').value,
+                id: Date.now()
+            };
+            
+            if (!project.title || !project.image) {
+                showNotification('Please fill in all project fields', 'error');
+                return;
+            }
+            
+            let projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            projects.push(project);
+            localStorage.setItem('portfolioProjects', JSON.stringify(projects));
+            
+            displayProjects();
+            clearProjectForm();
+            showNotification('Project added successfully!');
+        }
+
+        function removeProject(id) {
+            let projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            projects = projects.filter(project => project.id !== id);
+            localStorage.setItem('portfolioProjects', JSON.stringify(projects));
+            
+            displayProjects();
+            showNotification('Project removed successfully!');
+        }
+
+        function displayProjects() {
+            const container = document.getElementById('projectsContainer');
+            const projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            
+            container.innerHTML = '';
+            
+            projects.forEach(project => {
+                const projectDiv = document.createElement('div');
+                projectDiv.className = 'portfolio-item';
+                projectDiv.innerHTML = `
+                    <h4>${project.title}</h4>
+                    <p><strong>Category:</strong> ${project.category}</p>
+                    <p><strong>Image:</strong> ${project.image}</p>
+                    <button class="remove-btn" onclick="removeProject(${project.id})">Remove</button>
+                `;
+                container.appendChild(projectDiv);
+            });
+        }
+
+        function clearProjectForm() {
+            document.getElementById('projectTitle').value = '';
+            document.getElementById('projectCategory').value = 'Web Development';
+            document.getElementById('projectImage').value = '';
+        }
+
+        function loadSavedData() {
+            // Load personal info
+            const personalInfo = JSON.parse(localStorage.getItem('portfolioPersonalInfo') || '{}');
+            if (personalInfo.firstName) document.getElementById('firstName').value = personalInfo.firstName;
+            if (personalInfo.lastName) document.getElementById('lastName').value = personalInfo.lastName;
+            if (personalInfo.title) document.getElementById('title').value = personalInfo.title;
+            if (personalInfo.description) document.getElementById('description').value = personalInfo.description;
+            
+            // Load contact info
+            const contactInfo = JSON.parse(localStorage.getItem('portfolioContactInfo') || '{}');
+            if (contactInfo.email) document.getElementById('email').value = contactInfo.email;
+            if (contactInfo.phone) document.getElementById('phone').value = contactInfo.phone;
+            if (contactInfo.location) document.getElementById('location').value = contactInfo.location;
+            
+            // Load skills
+            const skills = JSON.parse(localStorage.getItem('portfolioSkills') || '{}');
+            if (skills.skill1) document.getElementById('skill1').value = skills.skill1;
+            if (skills.skill2) document.getElementById('skill2').value = skills.skill2;
+            if (skills.skill3) document.getElementById('skill3').value = skills.skill3;
+            
+            // Display projects
+            displayProjects();
+        }
+
+        function previewPersonalInfo() {
+            const firstName = document.getElementById('firstName').value || 'Your';
+            const lastName = document.getElementById('lastName').value || 'Name';
+            const title = document.getElementById('title').value || 'Professional Title';
+            const description = document.getElementById('description').value || 'Your description here...';
+            
+            const preview = document.getElementById('personalPreviewContent');
+            preview.innerHTML = `
+                <h2>${firstName} ${lastName}</h2>
+                <p><strong>Title:</strong> ${title}</p>
+                <p><strong>Description:</strong> ${description}</p>
+            `;
+            
+            document.getElementById('personalPreview').style.display = 'block';
+        }
+
+        function previewContactInfo() {
+            const email = document.getElementById('email').value || 'your.email@example.com';
+            const phone = document.getElementById('phone').value || '+1 (555) 123-4567';
+            const location = document.getElementById('location').value || 'Your City, Country';
+            
+            const preview = document.getElementById('contactPreviewContent');
+            preview.innerHTML = `
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Phone:</strong> ${phone}</p>
+                <p><strong>Location:</strong> ${location}</p>
+            `;
+            
+            document.getElementById('contactPreview').style.display = 'block';
+        }
+
+        function previewSkills() {
+            const skill1 = document.getElementById('skill1').value || 'Skill 1';
+            const skill2 = document.getElementById('skill2').value || 'Skill 2';
+            const skill3 = document.getElementById('skill3').value || 'Skill 3';
+            
+            const preview = document.getElementById('skillsPreviewContent');
+            preview.innerHTML = `
+                <p>• ${skill1}</p>
+                <p>• ${skill2}</p>
+                <p>• ${skill3}</p>
+            `;
+            
+            document.getElementById('skillsPreview').style.display = 'block';
+        }
+
+        function exportData() {
+            const data = {
+                personalInfo: JSON.parse(localStorage.getItem('portfolioPersonalInfo') || '{}'),
+                contactInfo: JSON.parse(localStorage.getItem('portfolioContactInfo') || '{}'),
+                skills: JSON.parse(localStorage.getItem('portfolioSkills') || '{}'),
+                projects: JSON.parse(localStorage.getItem('portfolioProjects') || '[]')
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'portfolio-data.json';
+            a.click();
+            
+            showNotification('Data exported successfully!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        if (data.personalInfo) localStorage.setItem('portfolioPersonalInfo', JSON.stringify(data.personalInfo));
+                        if (data.contactInfo) localStorage.setItem('portfolioContactInfo', JSON.stringify(data.contactInfo));
+                        if (data.skills) localStorage.setItem('portfolioSkills', JSON.stringify(data.skills));
+                        if (data.projects) localStorage.setItem('portfolioProjects', JSON.stringify(data.projects));
+                        
+                        loadSavedData();
+                        showNotification('Data imported successfully!');
+                    } catch (error) {
+                        showNotification('Error importing data. Please check file format.', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function generateHTML() {
+            const personalInfo = JSON.parse(localStorage.getItem('portfolioPersonalInfo') || '{}');
+            const contactInfo = JSON.parse(localStorage.getItem('portfolioContactInfo') || '{}');
+            const skills = JSON.parse(localStorage.getItem('portfolioSkills') || '{}');
+            const projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            
+            // This would generate the updated HTML with your data
+            // For now, just show a notification
+            showNotification('HTML generation feature coming soon!');
+        }
+    </script>
+</body>
+</html>
